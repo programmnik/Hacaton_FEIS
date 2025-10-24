@@ -3,35 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/ocr.css">
-    <title>ТекстоЛов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ocr.css') }}">
+    <title>ТекстоЛов - Распознавание текста</title>
+    <style>
+        /* Дополнительные стили для улучшенного интерфейса */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .notification-success {
+            background: #4CAF50;
+        }
+        
+        .notification-error {
+            background: #f44336;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .drag-over {
+            border-color: #4CAF50 !important;
+            background-color: #f8fff8 !important;
+        }
+        
+        .status-available {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .status-demo {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <img class="logo_image" src="../static/img/logo.png" alt="Логотип ТекстоЛов">
     </header>
 
-    <div class="main">
-        <div class="image_field">
-            <div class="icon_field">
-                <img class="image_icon" src="../static/img/image_1.png" alt="Иконка изображения">
-                <p class="drop_text">Перетащите изображение сюда или выберите файл на компьютере</p>
+    <main class="main">
+        <div class="upload-container">
+            <!-- Область для drag & drop -->
+            <div class="image_field" id="uploadArea">
+                <div class="icon_field" id="iconField">
+                    <img class="image_icon" src="{{ url_for('static', filename='img/image_1.png') }}" alt="Иконка изображения">
+                    <p class="drop_text">Перетащите изображение сюда или выберите файл</p>
+                    <p class="file-formats">Поддерживаемые форматы: PNG, JPG, JPEG, BMP, TIFF</p>
+                </div>
+            </div>
+
+            <!-- Скрытый input для выбора файла -->
+            <input type="file" class="file-input" id="fileInput" accept="image/*">
+            
+            <!-- Кнопки управления -->
+            <div class="controls">
+                <button class="search_pc_button" id="chooseBtn">Выбрать файл</button>
+                <button class="start_button" id="recognizeBtn" disabled>Распознать текст</button>
+            </div>
+
+            <!-- Информация о файле -->
+            <div class="file-info">
+                <span class="file-name" id="fileName"></span>
             </div>
         </div>
-    </div>
 
-    <button class="search_pc_button">Выбрать файл</button>
-    <input type="file" class="file-input" accept="image/*">
-    <div class="file-name"></div>
+        <!-- Область результатов -->
+        <div class="result-container" id="resultContainer">
+            <h2>Результат распознавания</h2>
+            <div class="result_text_field">
+                <p class="result_text" id="resultText">Здесь появится распознанный текст...</p>
+            </div>
+            <div class="result-meta">
+                <span id="fileNameDisplay">Файл: не выбран</span>
+                <button class="copy-btn" id="copyBtn">Копировать текст</button>
+            </div>
+        </div>
 
-    <button class="start_button">Распознать текст</button>
+        <!-- Статус системы -->
+        <div class="status-info" id="statusInfo">
+            <div class="status-item">
+                <span class="status-label">Статус системы:</span>
+                <span class="status-value" id="systemStatus">Проверка...</span>
+            </div>
+        </div>
+    </main>
 
-    <div class="result_text_field" id="hidden">
-        <p class="result_text"></p>
-    </div>
+    <footer class="footer">
+        <p>ТекстоЛов &copy; 2024 - Система распознавания текста</p>
+    </footer>
 
-    <footer></footer>
-
-    <script src="../static/ocr.js"></script>
+    <script src="{{ url_for('static', filename='ocr.js') }}"></script>
 </body>
 </html>
